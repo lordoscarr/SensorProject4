@@ -5,15 +5,6 @@ import android.os.IBinder;
 
 import com.lordoscar.sensorproject4.MainActivity;
 
-/*
- * @Author Marcel Laska
- * @Date 2019ish
- * @Project Assign 4 aka Pathfinder @ MAU
- *
- *
- * Class that binds StepCountingService with MainActivity
- */
-
 public class ServiceConnection implements android.content.ServiceConnection {
 
     private MainActivity mainActivity;

@@ -16,14 +16,6 @@ import android.widget.Toast;
 import com.lordoscar.sensorproject4.db.AsyncTasks.InsertStepAsyncTask;
 import com.lordoscar.sensorproject4.MainActivity;
 
-/*
- * @Author Marcel Laska
- * @Date 2019ish
- * @Project Assign 4 aka Pathfinder @ MAU
- *
- *
- * Service-class that keeps track of steps and sends data to mainActivity
- */
 public class StepCountingService extends Service implements SensorEventListener {
 
     public MainActivity mainActivity;

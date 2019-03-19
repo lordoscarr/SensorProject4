@@ -6,14 +6,6 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 import java.util.List;
 
-/*
- * @Author Marcel Laska
- * @Date 2019ish
- * @Project Assign 4 aka Pathfinder @ MAU
- *
- *
- * AppDataAccessObject - Lists methods for insert, delete & update
- */
 @Dao
 public interface AppDAO {
 

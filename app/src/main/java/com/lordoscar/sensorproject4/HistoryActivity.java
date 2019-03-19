@@ -12,14 +12,7 @@ import com.lordoscar.sensorproject4.db.Step;
 
 import java.util.ArrayList;
 import java.util.List;
-/*
- * @Author Marcel Laska
- * @Date 2019ish
- * @Project Assign 4 aka Pathfinder @ MAU
- *
- *
- * History-activity class that shows the history for current user.
- */
+
 public class HistoryActivity extends AppCompatActivity {
 
     private String username;

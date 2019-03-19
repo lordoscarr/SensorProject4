@@ -9,14 +9,7 @@ import android.widget.EditText;
 import com.lordoscar.sensorproject4.db.AsyncTasks.LoginUserAsyncTask;
 import com.lordoscar.sensorproject4.db.AsyncTasks.RegisterUserAsyncTask;
 
-/*
- * @Author Marcel Laska
- * @Date 2019ish
- * @Project Assign 4 aka Pathfinder @ MAU
- *
- *
- * Login-activity that lets user login and/or register.
- */
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextName, editTextPassword;

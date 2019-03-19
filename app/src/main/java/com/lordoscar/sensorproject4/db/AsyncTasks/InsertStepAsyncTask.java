@@ -9,15 +9,6 @@ import com.lordoscar.sensorproject4.db.Step;
 import com.lordoscar.sensorproject4.MainActivity;
 import com.lordoscar.sensorproject4.helpers.StepCountingService;
 
-
-/*
- * @Author Marcel Laska
- * @Date 2019ish
- * @Project Assign 4 aka Pathfinder @ MAU
- *
- *
- * AsyncTask that insert steps into db for current user
- */
 public class InsertStepAsyncTask extends AsyncTask<Void, Void, Void> {
     private StepCountingService mainActivity;
     private String username;

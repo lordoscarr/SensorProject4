@@ -10,14 +10,6 @@ import com.lordoscar.sensorproject4.db.AppDatabase;
 import com.lordoscar.sensorproject4.db.UserCredentials;
 import com.lordoscar.sensorproject4.MainActivity;
 
-/*
- * @Author Marcel Laska
- * @Date 2019ish
- * @Project Assign 4 aka Pathfinder @ MAU
- *
- *
- * AsyncTask that checks if username & password does match
- */
 public class LoginUserAsyncTask extends AsyncTask<Void, Void, Void> {
     private Context context;
     private String username, password;

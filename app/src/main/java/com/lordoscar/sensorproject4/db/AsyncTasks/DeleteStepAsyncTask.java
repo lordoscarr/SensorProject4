@@ -5,15 +5,6 @@ import android.os.AsyncTask;
 import com.lordoscar.sensorproject4.db.AppDatabase;
 import com.lordoscar.sensorproject4.MainActivity;
 
-/*
- * @Author Marcel Laska
- * @Date 2019ish
- * @Project Assign 4 aka Pathfinder @ MAU
- *
- *
- * Asynctask that deletes all steps for user.
- */
-
 public class DeleteStepAsyncTask extends AsyncTask<Void, Void, Void> {
     private MainActivity mainActivity;
     private String username;

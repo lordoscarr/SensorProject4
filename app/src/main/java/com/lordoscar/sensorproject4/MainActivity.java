@@ -20,15 +20,6 @@ import com.lordoscar.sensorproject4.db.AsyncTasks.DeleteStepAsyncTask;
 import com.lordoscar.sensorproject4.helpers.ServiceConnection;
 import com.lordoscar.sensorproject4.helpers.StepCountingService;
 
-/*
- * @Author Marcel Laska
- * @Date 2019ish
- * @Project Assign 4 aka Pathfinder @ MAU
- *
- *
- * Main-activity that shows the compass along with two buttons
- * and handles compass & shake-thingy along with some other stuff.
- */
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
