@@ -3,51 +3,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="10dp"
-    android:layout_marginStart="10dp"
-    android:layout_marginTop="10dp"
-    app:cardBackgroundColor="@color/colorAccent">
+    app:cardBackgroundColor="#20ffffff">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
-        android:padding="10dp">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textViewStepsStep"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="Steps: "
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@android:color/background_dark"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_marginRight="100dp"
+            android:orientation="vertical"
+            android:layout_margin="5dp">
+            <TextView
+                android:id="@+id/userTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LORD" android:textColor="@color/colorAccent"
+                android:textSize="20dp"
+                android:textAllCaps="true"/>
 
-        <TextView
-            android:id="@+id/textViewDateStep"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/dateTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2019-03-25" android:textColor="#fff"
+                android:textSize="20dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_toStartOf="@id/textViewStepsStep"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Date: "
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@android:color/background_dark"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_gravity="right|center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="STEPS"
+                android:textColor="@color/colorAccent"
+                android:textAlignment="center"/>
 
-        <TextView
-            android:id="@+id/textViewUserStep"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textViewDateStep"
-            android:text="User: "
-            android:textColor="@android:color/background_dark"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/stepsTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="245"
+                android:textSize="24dp"
+                android:textColor="#fff"
+                android:textAlignment="center"/>
 
-    </RelativeLayout>
+        </LinearLayout>
+
+
+    </FrameLayout>
 </android.support.v7.widget.CardView>

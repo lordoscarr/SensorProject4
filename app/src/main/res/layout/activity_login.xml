@@ -1,97 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffd8ed"
+    android:background="#000000"
     android:orientation="vertical"
     tools:context=".LoginActivity">
 
-
     <TextView
-        android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:layout_marginTop="50dp"
-        android:background="?attr/colorPrimary"
-        android:text="USERNAME"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        android:layout_weight="1"
+        android:text="welcome"
+        android:textColor="#fff"
+        android:textSize="40dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"/>
 
-    <EditText
-        android:id="@+id/editTextName"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:background="?attr/colorBackgroundFloating"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Insert username here"
-        android:textAlignment="center"
-        android:textSize="25sp"
-        android:textStyle="italic" />
+        android:orientation="vertical"
+        android:layout_gravity="center">
 
-    <TextView
-        android:id="@+id/textView"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="@color/colorAccent"
+            android:text="USERNAME" />
+
+        <EditText
+            android:id="@+id/usernameField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="CoolUser2"
+            android:textColorHint="#60ffffff"
+            android:backgroundTint="#60ffffff"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="#fff"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="@color/colorAccent"
+            android:text="PASSWORD" />
+
+        <EditText
+            android:id="@+id/passwordField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="#Password1337"
+            android:textColorHint="#60ffffff"
+            android:backgroundTint="#60ffffff"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="#fff"
+            />
+
+    </LinearLayout>
+
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:layout_marginTop="25dp"
-        android:background="?attr/colorPrimary"
-        android:text="PASSWORD"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        android:layout_height="80dp"
+        android:columnCount="2"
+        android:layout_gravity="bottom">
 
-    <EditText
-        android:id="@+id/editTextPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:background="?attr/colorBackgroundFloating"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:text="insertpasswordhere"
-        android:textAlignment="center"
-        android:textSize="25sp"
-        android:textStyle="bold|italic" />
+        <Button
+            android:id="@+id/buttonRegister"
+            android:layout_columnWeight="1"
+            android:background="@drawable/border_button"
+            android:textColor="#fff"
+            android:text="REGISTER"
+            android:layout_margin="5dp"/>
 
-    <Button
-        android:id="@+id/buttonRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:layout_marginTop="100dp"
-        android:background="@color/colorPrimary"
-        android:text="REGISTER"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        <Button
+            android:id="@+id/buttonLogin"
+            android:layout_columnWeight="1"
+            android:background="@drawable/border_button"
+            android:textColor="#fff"
+            android:layout_margin="5dp"
+            android:text="LOGIN" />
 
-    <Button
-        android:id="@+id/buttonLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:layout_marginTop="7.5dp"
-        android:background="@color/colorPrimary"
-        android:text="LOGIN"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+    </GridLayout>
 
-
-</LinearLayout>
+</FrameLayout>

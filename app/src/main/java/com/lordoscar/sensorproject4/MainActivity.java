@@ -1,40 +1,52 @@
 package com.lordoscar.sensorproject4;
 
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lordoscar.sensorproject4.db.AsyncTasks.DeleteStepAsyncTask;
+import com.lordoscar.sensorproject4.db.AppDatabase;
+import com.lordoscar.sensorproject4.db.Step;
 import com.lordoscar.sensorproject4.helpers.ServiceConnection;
 import com.lordoscar.sensorproject4.helpers.StepCountingService;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    // UI & DB variables
-    private ImageView imageViewCompass;
-    private TextView textViewStepsTotal, textViewStepsPerSecond, textViewName;
+    // region variables
+
+    private ImageView compassImg;
+    private TextView totalStepsTv, stepPerSecTv, helloTv;
     private Button buttonReset, buttonHistory;
     private SensorManager sensorManager;
     private Sensor sensorAccelerometer, sensorMagnetometer;
     private Animation animation;
-    private boolean isAnimationRunning = false;
     public static final String Database_name = "database";
     private String username;
 
-    // Compass variables
     private int mAzimuth;
     float[] rMat = new float[9];
     float[] orientation = new float[3];
@@ -42,105 +54,117 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] mLastMagnetometer = new float[3];
     private boolean mLastAccelerometerSet = false;
     private boolean mLastMagnetometerSet = false;
+    boolean isAnimating = false;
 
-    // Service-variables
     public StepCountingService stepCountingService;
     public boolean bound;
     private ServiceConnection serviceConnection;
     private Intent stepsIntent;
 
+    //endregion
 
-    /*
-     * onCreate-method that calls several other methods
-     * that should be running from the start
-     */
+    // region initialization
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initializeComponents();
-        getShakeSensors();
-        setWelcomeName();
         firstStartCheck();
+        initialize();
+        getShakeSensors();
+        setName();
     }
 
-    /*
-     * Initializes UI-components
-     */
-    public void initializeComponents() {
-        imageViewCompass = findViewById(R.id.imageViewCompass);
-        textViewStepsTotal = findViewById(R.id.textViewStepsTotal);
-        textViewStepsPerSecond = findViewById(R.id.textViewStepsPerSecond);
-        textViewName = findViewById(R.id.textViewWelcome);
+    public void initialize() {
+        compassImg = findViewById(R.id.compassImg);
+        totalStepsTv = findViewById(R.id.totalStepsTv);
+        stepPerSecTv = findViewById(R.id.stepPerSecTv);
+        helloTv = findViewById(R.id.helloTv);
         buttonReset = findViewById(R.id.buttonReset);
         buttonHistory = findViewById(R.id.buttonHistory);
         buttonHistory.setOnClickListener(new ButtonListener());
         buttonReset.setOnClickListener(new ButtonListener());
     }
 
-    /*
-     * Sets the "Welcome User"-text by taking username from the Login-activity.
-     */
-    public void setWelcomeName() {
-        textViewName.setText("" + getIntent().getStringExtra("name"));
+    // endregion
+
+    // region ui and database functions
+
+    public void setName() {
+        username = getSharedPreferences("com.lordoscar.sensorproject4", Context.MODE_PRIVATE).getString("username", "anon");
+        if (username.equals("anon")){
+            showLogin();
+        }else {
+            helloTv.setText("HELLO " + username.toUpperCase());
+        }
     }
 
-    /*
-     * Sets the username so it can be passed forward to the stepCountingService.
-     */
-    public void setUsername() {
-        username = textViewName.getText().toString();
-        this.username = username;
-    }
-
-    /*
-     * Get-method so the stepCountingService can grab the username
-     */
     public String getUsername() {
         return username;
     }
 
-    /*
-     *  Method that updates the steps-textviews with data from stepCountingService.
-     */
     public void updateSteps(int stepCounter, int stepsPerSecond) {
-        textViewStepsTotal.setText("TOTAL STEPS: " + stepCounter);
-        textViewStepsPerSecond.setText("STEPS PER SECOND: " + stepsPerSecond);
+        totalStepsTv.setText(stepCounter + " steps");
+        stepPerSecTv.setText(stepsPerSecond + " sps");
+
+        AppDatabase appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, MainActivity.Database_name)
+                .allowMainThreadQueries().build();
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String date = sdf.format(calendar.getTime());
+        Log.d("Date", date);
+
+
+        List<Step> listOfStepsToday = appDatabase.appDAO().getAllStepsForThisUserAndDate(username, date);
+
+        // Row exists --> update the steps
+        if( listOfStepsToday.size() > 0 ){
+            int steps = listOfStepsToday.get(0).getAmountOfSteps() + 1;
+            listOfStepsToday.get(0).setAmountOfSteps(steps);
+            appDatabase.appDAO().updateStepsForThisUser( listOfStepsToday.get(0) );
+        } else {
+            // Make new row for this date
+            Step insertNewStep = new Step(username, 1, date);
+            appDatabase.appDAO().insert(insertNewStep);
+        }
     }
 
-    /*
-     * Method that checks if it is a first start.
-     * If yes --> user has to login or register.
-     * If not --> starts serviceConnection & bounds the service.
-     */
+    private void clearDatabase() {
+        getSharedPreferences("com.lordoscar.sensorproject4", MODE_PRIVATE).edit().clear().commit();
+        showLogin();
+    }
+
+    // endregion
+
+    // region first start / launch
+
     public void firstStartCheck() {
-        if (textViewName.getText().equals("") || textViewName.getText().equals("null") || textViewName.getText().equals("Insert username here")) {
-            Intent login = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(login);
-        } else {
-            setUsername();
+        SharedPreferences prefs = getSharedPreferences("com.lordoscar.sensorproject4", Context.MODE_PRIVATE);
+        boolean firststart = prefs.getBoolean("firststart", true);
+        if (firststart){
+            showLogin();
+        }else {
             serviceConnection = new ServiceConnection(this);
             stepsIntent = new Intent(this, StepCountingService.class);
             bindService(stepsIntent, serviceConnection, Context.BIND_AUTO_CREATE);
             bound = true;
             Toast.makeText(this, "SERVICE BOUNDED", Toast.LENGTH_SHORT).show();
+            Log.d("Service bound","step service initiated");
         }
     }
 
-    /*
-     * Method called when user presses the Deletebutton.
-     * It deletes this users stephistory from the database.
-     */
-    public void deleteAllFromDatabase() {
-        DeleteStepAsyncTask deleteStepAsyncTask = new DeleteStepAsyncTask(this, textViewName.getText().toString());
-        deleteStepAsyncTask.execute();
+    private void showLogin(){
+        Intent login = new Intent(MainActivity.this, LoginActivity.class);
+        login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(login);
+        finish();
     }
 
-    ///////////// COMPASS AND SHAKE ///////////////////////////
+    // endregion
 
-    /*
-     * Method that sets the sensorManager & gets the sensor for the compass & shake-thingy.
-     */
+    // region Compass implementation
+
     public void getShakeSensors() {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
@@ -155,24 +179,44 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    /*
-     * Method that rotates the compass-image.
-     */
-    public void compassRotation() {
-        isAnimationRunning = true;
+    private void compassRotation(){
+        isAnimating = true;
         animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
         animation.setFillAfter(true);
-        imageViewCompass.startAnimation(animation);
+        compassImg.startAnimation(animation);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                isAnimating = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
-    /*
-     * Method that finds NORTH and makes the compass-image point that way.
-     */
+    long lastupdate = SystemClock.elapsedRealtime();
+
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (isAnimating){
+            return;
+        }
+        if (SystemClock.elapsedRealtime() - lastupdate < 200){
+            shakeDetector(event);
+            return;
+        }
+        int prevAzi = -mAzimuth;
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             SensorManager.getRotationMatrixFromVector(rMat, event.values);
-            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
+            int degree = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
+            mAzimuth = degree - (degree % 15);
         }
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
@@ -184,17 +228,33 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (mLastAccelerometerSet && mLastMagnetometerSet) {
             SensorManager.getRotationMatrix(rMat, null, mLastAccelerometer, mLastMagnetometer);
             SensorManager.getOrientation(rMat, orientation);
-            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
+            int degree = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
+            mAzimuth = degree - (degree % 15);
         }
 
+        AnimationSet animSet = new AnimationSet(true);
+        animSet.setInterpolator(new LinearInterpolator());
+        animSet.setFillAfter(true);
+        animSet.setFillEnabled(true);
+
+        //find whether we should rotate left or right
+        Log.d("azimuth - (-)prev diff", "" + (mAzimuth - (-prevAzi)) + "(prevazi= " + prevAzi + ", mazi= " +mAzimuth + ")");
+
+        RotateAnimation animRotate;
+
+        animRotate = new RotateAnimation(prevAzi, -mAzimuth,
+            RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+            RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+
+        animRotate.setDuration(200);
+        animRotate.setFillAfter(true);
+        animSet.addAnimation(animRotate);
+
+        compassImg.startAnimation(animSet);
         shakeDetector(event);
-        mAzimuth = Math.round(mAzimuth);
-        imageViewCompass.setRotation(-mAzimuth);
+        lastupdate = SystemClock.elapsedRealtime();
     }
 
-    /*
-     * Method that detects a shake & calls the "animation"-method.
-     */
     public void shakeDetector(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             float[] values = event.values;
@@ -205,6 +265,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             float accelerationSquareRoot = (x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
             if (accelerationSquareRoot >= 5) {
+                isAnimating = true;
+                mAzimuth = 0;
+                compassImg.setRotation(mAzimuth);
                 compassRotation();
             }
         }
@@ -212,49 +275,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 
-    /*
-     * Unregs. the sensors.
-     */
+    // endregion shake i
+
+    // region State implementation (pause, resume)
+
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this, sensorAccelerometer);
         sensorManager.unregisterListener(this, sensorMagnetometer);
-        Toast.makeText(this, "UNREGISTERED", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Unregistered listeners", Toast.LENGTH_SHORT).show();
     }
 
-    /*
-     * Reg. the sensors.
-     */
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_UI);
         sensorManager.registerListener(this, sensorMagnetometer, SensorManager.SENSOR_DELAY_UI);
+        Toast.makeText(this, "Registered listeners", Toast.LENGTH_SHORT).show();
     }
 
-    /*
-     * Shows toast & goes back to Login-activity,
-     */
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Toast.makeText(this, "GOODBYE :)", Toast.LENGTH_SHORT).show();
-    }
+    // endregion
 
-    /*
-     * Listeners for buttons.
-     */
+    // region ButtonListener
+
     private class ButtonListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            if (v.equals(buttonReset)) {
-                deleteAllFromDatabase();
-            } else if (v.equals(buttonHistory)) {
-                Intent openHistoryForThisUser = new Intent(MainActivity.this, HistoryActivity.class);
-                openHistoryForThisUser.putExtra("name", textViewName.getText().toString());
-                startActivity(openHistoryForThisUser);
+            switch (v.getId()){
+                case R.id.buttonReset:
+                    clearDatabase();
+                    break;
+                case R.id.buttonHistory:
+                    Intent openHistoryForThisUser = new Intent(MainActivity.this, HistoryActivity.class);
+                    openHistoryForThisUser.putExtra("name", helloTv.getText().toString());
+                    startActivity(openHistoryForThisUser);
+                    break;
             }
         }
     }
+
+    // endregion
+
 }

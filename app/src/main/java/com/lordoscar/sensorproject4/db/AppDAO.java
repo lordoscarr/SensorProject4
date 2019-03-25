@@ -38,5 +38,4 @@ public interface AppDAO {
 
     @Query("DELETE FROM user_table")
     void deleteAllUsers();
-
 }

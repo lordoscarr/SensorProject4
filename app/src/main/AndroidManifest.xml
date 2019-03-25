@@ -17,6 +17,7 @@
         </activity>
         <activity android:name=".LoginActivity"></activity>
         <activity android:name=".HistoryActivity"></activity>
+        <service android:name=".helpers.StepCountingService"/>
     </application>
 
 </manifest>

@@ -1,105 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="#000"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginBottom="80dp">
 
-        <TextView
-            android:id="@+id/textViewTop"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/background_light"
-            android:text="Welcome to Pathfinder, "
-            android:textAlignment="center"
-            android:textColor="?attr/actionModeSplitBackground"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="compass"
+                android:textColor="#fff"
+                android:textSize="40dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"/>
+
+            <TextView
+                android:id="@+id/helloTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="HELLO"
+                android:layout_marginHorizontal="10dp"
+                android:textColor="@color/colorAccent"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp">
+
+            <ImageView
+                android:id="@+id/compassImg"
+                app:srcCompat="@mipmap/compass_border"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:srcCompat="@mipmap/compass" />
+
+        </FrameLayout>
 
         <TextView
-            android:id="@+id/textViewWelcome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/background_light"
-            android:textAlignment="center"
-            android:textColor="?attr/actionModeSplitBackground"
+            android:layout_marginTop="10dp"
+            android:text="total steps: "
+            android:textColor="#fff"
+            android:textSize="20dp"
+            android:layout_marginHorizontal="10dp" />
+
+        <TextView
+            android:id="@+id/totalStepsTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:layout_marginHorizontal="10dp"
+            android:textSize="26dp"
+            android:text="0 steps"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="steps per second: "
+            android:textColor="#fff"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_marginHorizontal="10dp"/>
+
+        <TextView
+            android:id="@+id/stepPerSecTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:layout_marginHorizontal="10dp"
+            android:textSize="26dp"
+            android:text="0 sps"/>
+
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/imageViewCompass"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_gravity="center"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        app:srcCompat="@mipmap/compass" />
-
-    <TextView
-        android:id="@+id/textViewStepsTotal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/holo_red_light"
-        android:text="TOTAL STEPS: "
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/textViewStepsPerSecond"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/holo_red_light"
-        android:text="STEPS PER SECOND: "
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+    <GridLayout
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:columnCount="2"
+    android:layout_gravity="bottom">
 
     <Button
+        android:layout_columnWeight="1"
         android:id="@+id/buttonHistory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="35dp"
-        android:layout_marginRight="35dp"
-        android:layout_marginTop="20dp"
-        android:background="@color/colorPrimary"
-        android:text="HISTORY"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
+        android:text="history"
+        android:textAllCaps="false"
+        android:background="@drawable/border_button"
+        android:textColor="#fff"
+        android:textSize="18dp"
+        android:layout_margin="10dp"
+        />
     <Button
+        android:layout_columnWeight="1"
         android:id="@+id/buttonReset"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="35dp"
-        android:layout_marginRight="35dp"
-        android:layout_marginTop="10dp"
-        android:background="?attr/colorPrimary"
-        android:text="RESET DATABASE"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:text="logout"
+        android:textAllCaps="false"
+        android:background="@drawable/border_button"
+        android:textColor="#fff"
+        android:textSize="18dp"
+        android:layout_margin="10dp"
+        />
+    />
 
+    </GridLayout>
 
-
-</LinearLayout>
+</FrameLayout>

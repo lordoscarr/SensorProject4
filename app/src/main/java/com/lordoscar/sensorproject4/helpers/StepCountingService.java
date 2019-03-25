@@ -8,13 +8,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.SystemClock;
+import android.util.Log;
 import android.widget.Toast;
-
-import com.lordoscar.sensorproject4.db.AsyncTasks.InsertStepAsyncTask;
 import com.lordoscar.sensorproject4.MainActivity;
+
+import java.util.concurrent.TimeUnit;
 
 public class StepCountingService extends Service implements SensorEventListener {
 
@@ -25,9 +26,7 @@ public class StepCountingService extends Service implements SensorEventListener 
     private PowerManager powerManager;
     private PowerManager.WakeLock wakeLock;
     private int stepsSinceRegistered = 0;
-    private int stepsPerSecond = 0;
     private long startTime;
-    private Handler handler;
 
 
     public StepCountingService() {
@@ -39,29 +38,15 @@ public class StepCountingService extends Service implements SensorEventListener 
     public void onCreate() {
         super.onCreate();
         mBinder = new LocalBinder();
-        startTime = System.currentTimeMillis();
         mSensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
         if( mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR) != null  ){
             mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+            Log.d("Step detector", "sensor found");
+
         } else {
+            Log.d("No step detector", "No sensor found");
             Toast.makeText(this, "STEP DETECTOR SENSOR NOT AVAILABLE", Toast.LENGTH_SHORT).show();
         }
-
-        // Create the Handler object (on the main thread by default)
-        handler = new Handler();
-        // Define the code block to be executed
-        Runnable runnableCode = new Runnable() {
-            @Override
-            public void run() {
-                // Do something here on the main thread
-                stepsPerSecond = 0;
-                // Repeat this the same runnable code block again another 0.5 seconds
-                // 'this' is referencing the Runnable object
-                handler.postDelayed(this, 0);
-            }
-        };
-        // Start the initial runnable task by posting through the handler
-        handler.post(runnableCode);
     }
 
 
@@ -95,13 +80,26 @@ public class StepCountingService extends Service implements SensorEventListener 
         this.mainActivity = mainActivity;
     }
 
+    boolean firststep = true;
+
     @Override
     public void onSensorChanged(SensorEvent event) {
-        InsertStepAsyncTask insertStepAsyncTask = new InsertStepAsyncTask(this, mainActivity.getUsername());
-        insertStepAsyncTask.execute();
         stepsSinceRegistered++;
-        stepsPerSecond++;
-        mainActivity.updateSteps(stepsSinceRegistered, stepsPerSecond);
+
+        int stepsPerSec = 1;
+        int seconds = (int) TimeUnit.MILLISECONDS.toSeconds(SystemClock.elapsedRealtime() - startTime);
+        if (firststep){
+            startTime = SystemClock.elapsedRealtime();
+            firststep = false;
+        }else {
+            if (seconds != 0){
+                stepsPerSec = stepsSinceRegistered / seconds;
+            }else {
+                stepsPerSec = stepsSinceRegistered;
+            }
+        }
+
+        mainActivity.updateSteps(stepsSinceRegistered, stepsPerSec);
     }
 
     @Override
