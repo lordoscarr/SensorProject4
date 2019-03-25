@@ -99,10 +99,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     public void updateSteps(int stepCounter, int stepsPerSecond) {
         totalStepsTv.setText(stepCounter + " steps");
         stepPerSecTv.setText(stepsPerSecond + " sps");
@@ -149,16 +145,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             stepsIntent = new Intent(this, StepCountingService.class);
             bindService(stepsIntent, serviceConnection, Context.BIND_AUTO_CREATE);
             bound = true;
-            Toast.makeText(this, "SERVICE BOUNDED", Toast.LENGTH_SHORT).show();
-            Log.d("Service bound","step service initiated");
         }
     }
 
     private void showLogin(){
         Intent login = new Intent(MainActivity.this, LoginActivity.class);
-        login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(login);
-        finish();
     }
 
     // endregion
@@ -208,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (isAnimating){
             return;
         }
-        if (SystemClock.elapsedRealtime() - lastupdate < 200){
+        if (SystemClock.elapsedRealtime() - lastupdate < 300){
             shakeDetector(event);
             return;
         }
@@ -232,25 +224,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mAzimuth = degree - (degree % 15);
         }
 
-        AnimationSet animSet = new AnimationSet(true);
-        animSet.setInterpolator(new LinearInterpolator());
-        animSet.setFillAfter(true);
-        animSet.setFillEnabled(true);
+        mAzimuth = (mAzimuth+360) % 360;
 
-        //find whether we should rotate left or right
-        Log.d("azimuth - (-)prev diff", "" + (mAzimuth - (-prevAzi)) + "(prevazi= " + prevAzi + ", mazi= " +mAzimuth + ")");
+        if ((Math.abs(mAzimuth - (-prevAzi))) > 180){
+            compassImg.setRotation(-mAzimuth);
+        }else {
+            AnimationSet animSet = new AnimationSet(true);
+            animSet.setInterpolator(new LinearInterpolator());
+            animSet.setFillAfter(true);
+            animSet.setFillEnabled(true);
 
-        RotateAnimation animRotate;
+            RotateAnimation animRotate = new RotateAnimation(prevAzi, -mAzimuth,
+                    RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                    RotateAnimation.RELATIVE_TO_SELF, 0.5f);
 
-        animRotate = new RotateAnimation(prevAzi, -mAzimuth,
-            RotateAnimation.RELATIVE_TO_SELF, 0.5f,
-            RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+            animRotate.setDuration(300);
+            animRotate.setFillAfter(true);
+            animSet.addAnimation(animRotate);
 
-        animRotate.setDuration(200);
-        animRotate.setFillAfter(true);
-        animSet.addAnimation(animRotate);
+            compassImg.startAnimation(animSet);
+        }
 
-        compassImg.startAnimation(animSet);
+
         shakeDetector(event);
         lastupdate = SystemClock.elapsedRealtime();
     }

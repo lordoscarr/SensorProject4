@@ -93,4 +93,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
 }

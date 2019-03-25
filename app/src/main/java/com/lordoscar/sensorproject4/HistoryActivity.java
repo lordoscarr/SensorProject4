@@ -27,7 +27,6 @@ import java.util.List;
 
 public class HistoryActivity extends AppCompatActivity {
 
-    private String username;
     private ListView listView;
     private AppDatabase database;
     private AppDAO appDAO;
